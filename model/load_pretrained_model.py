@@ -111,6 +111,6 @@ import copy
 def download_weigth_from_hf(repo_id:str="emotion2vec/emotion2vec_base")->str:
     return snapshot_download(
         repo_id=repo_id, 
-        local_dir= os.path.join(os.path.dirname(__file__),"ckpt"), 
+        local_dir= os.path.dirname(__file__).replace("model","ckpt"), 
         ignore_patterns=["*wav","*.png"],
     )
