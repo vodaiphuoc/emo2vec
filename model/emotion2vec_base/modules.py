@@ -11,6 +11,8 @@ from .fairseq_modules import (
     TransposeLast,
 )
 
+from .timm_modules import DropPath, Mlp
+
 class Modality(Enum):
     AUDIO = auto()
 
@@ -192,8 +194,6 @@ class AltBlock(nn.Module):
 
         self.layer_norm_first = layer_norm_first
         self.ffn_targets = ffn_targets
-
-        from funasr.models.emotion2vec.timm_modules import DropPath, Mlp
 
         self.norm1 = norm_layer(dim)
         self.attn = AltAttention(
