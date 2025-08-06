@@ -12,7 +12,7 @@ class E2VftModel(torch.nn.Module):
             self,
             head_dim:int, 
             num_classes:int, 
-            pretrain_cfg: DictConfig = get_pretrain_config()
+            pretrain_cfg: DictConfig
         )->None:
         super().__init__()
         
