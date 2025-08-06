@@ -1,5 +1,4 @@
 upstream/
-ckpt/
 myenv/
 train_utils/
 FunASR/
