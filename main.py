@@ -1,0 +1,4 @@
+from model.load_pretrained_model import download_weigth_from_hf
+
+
+download_weigth_from_hf()
