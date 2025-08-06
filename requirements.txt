@@ -1,0 +1,5 @@
+torch
+numpy
+omegaconf
+pydub
+kaldiio>=2.17.0

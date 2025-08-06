@@ -1,0 +1,50 @@
+import numpy as np
+import torch
+import torch.nn as nn
+
+from .emotion2vec_base.model import Emotion2vec, PretrainOutput
+from .load_config import get_pretrain_config
+from omegaconf import DictConfig
+
+class E2VftModel(torch.nn.Module):
+    
+    def __init__(
+            self,
+            head_dim:int, 
+            num_classes:int, 
+            pretrain_cfg: DictConfig = get_pretrain_config()
+        )->None:
+        super().__init__()
+        
+        self._pretrain_model: Emotion2vec = Emotion2vec(model_conf = pretrain_cfg)
+        self.head = torch.nn.Linear(head_dim, num_classes)
+
+    def forward(
+            self,
+            source,
+            target=None,
+            id=None,
+            mode=None,
+            padding_mask=None,
+            mask=True,
+            features_only=False,
+            force_remove_masked=False,
+            remove_extra_tokens=True,
+            precomputed_mask=None,
+            **kwargs
+        )->torch.Tensor:
+        pretrain_outputs: PretrainOutput = self._pretrain_model(
+            source = source,
+            target = target,
+            id= id,
+            mode=mode,
+            padding_mask=padding_mask,
+            mask=mask,
+            features_only=features_only,
+            force_remove_masked=force_remove_masked,
+            remove_extra_tokens=remove_extra_tokens,
+            precomputed_mask=precomputed_mask,
+            **kwargs
+        )
+        return self.head(pretrain_outputs.x)
+

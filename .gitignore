@@ -1,0 +1,8 @@
+upstream/
+ckpt/
+myenv/
+train_utils/
+FunASR/
+__pycache__/
+
+*test*.py
