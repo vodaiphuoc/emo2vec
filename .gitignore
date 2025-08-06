@@ -3,6 +3,6 @@ ckpt/
 myenv/
 train_utils/
 FunASR/
-__pycache__/
+*.pyc
 
 *test*.py
