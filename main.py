@@ -1,10 +1,19 @@
-from model.load_pretrained_model import download_weigth_from_hf
+from model import (
+    E2VftModel,
+    download_repo_from_hf,
+    load_pretrained_model,
+    get_pretrain_config
+)
 
 
-path= download_weigth_from_hf()
+local_dir = download_repo_from_hf()
+pretrain_cfg = get_pretrain_config()
+pretrain_state_dict = load_pretrained_model()
 
-import torch
-import os
 
-with open(os.path.join(path, "emotion2vec_base.pt"),"r") as fp:
-    torch.load(fp, map_location="cpu")
+E2VftModel(
+    head_dim = 100, 
+    num_classes = 5, 
+    pretrain_cfg = pretrain_cfg,
+    pretrain_state_dict = pretrain_state_dict
+)

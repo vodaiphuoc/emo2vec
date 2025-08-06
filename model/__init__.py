@@ -27,3 +27,9 @@ except:
 
 
 from .emotion2vec_ft import E2VftModel
+
+from .load_utils import (
+    download_repo_from_hf,
+    load_pretrained_model,
+    get_pretrain_config
+)

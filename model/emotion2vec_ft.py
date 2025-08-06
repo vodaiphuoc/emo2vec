@@ -1,9 +1,9 @@
 import numpy as np
 import torch
 import torch.nn as nn
+from collections import OrderedDict
 
 from .emotion2vec_base.model import Emotion2vec, PretrainOutput
-from .load_config import get_pretrain_config
 from omegaconf import DictConfig
 
 class E2VftModel(torch.nn.Module):
@@ -12,11 +12,14 @@ class E2VftModel(torch.nn.Module):
             self,
             head_dim:int, 
             num_classes:int, 
-            pretrain_cfg: DictConfig
+            pretrain_cfg: DictConfig,
+            pretrain_state_dict: OrderedDict
         )->None:
         super().__init__()
         
         self._pretrain_model: Emotion2vec = Emotion2vec(model_conf = pretrain_cfg)
+        assert isinstance(pretrain_state_dict, OrderedDict)
+        self._pretrain_model.load_state_dict(pretrain_state_dict)
         self.head = torch.nn.Linear(head_dim, num_classes)
 
     def forward(

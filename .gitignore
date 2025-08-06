@@ -3,5 +3,5 @@ myenv/
 train_utils/
 FunASR/
 *.pyc
-
+ckpt/*
 *test*.py
