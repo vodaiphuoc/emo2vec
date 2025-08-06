@@ -7,8 +7,8 @@ from model import (
 
 
 local_dir = download_repo_from_hf()
-pretrain_cfg = get_pretrain_config()
-pretrain_state_dict = load_pretrained_model()
+pretrain_cfg = get_pretrain_config(download_dir=local_dir)
+pretrain_state_dict = load_pretrained_model(download_dir= local_dir)
 
 
 E2VftModel(
