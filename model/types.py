@@ -4,7 +4,7 @@ from typing import Type, TypeVar, Dict, Any
 
 T = TypeVar('T')
 
-
+@dataclasses.dataclass
 class AudioDecoderConfig:
     decoder_dim:int
     decoder_groups:int
@@ -14,7 +14,7 @@ class AudioDecoderConfig:
     add_positions_masked:bool
     add_positions_all:bool
     decoder_residual:bool
-    projection_layers:float
+    projection_layers:int
     projection_ratio:float
 
 
