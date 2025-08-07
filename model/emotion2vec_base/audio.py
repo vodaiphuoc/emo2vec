@@ -15,13 +15,13 @@ from .fairseq_modules import (
 )
 from .modules import Modality, BlockEncoder, Decoder1d
 from .base import ModalitySpecificEncoder, get_alibi_bias
-
+from ..types import AudioConfig
 
 class AudioEncoder(ModalitySpecificEncoder):
 
     def __init__(
         self,
-        modality_cfg,
+        modality_cfg: AudioConfig,
         embed_dim: int,
         make_block: Callable[[float], nn.ModuleList],
         norm_layer: Callable[[int], nn.LayerNorm],

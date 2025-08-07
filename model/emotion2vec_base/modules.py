@@ -13,24 +13,10 @@ from .fairseq_modules import (
 
 from .timm_modules import DropPath, Mlp
 
+from ..types import AudioDecoderConfig
+
 class Modality(Enum):
     AUDIO = auto()
-
-
-@dataclass
-class D2vDecoderConfig:
-    decoder_dim: int = 384
-    decoder_groups: int = 16
-    decoder_kernel: int = 5
-    decoder_layers: int = 5
-    input_dropout: float = 0.1
-
-    add_positions_masked: bool = False
-    add_positions_all: bool = False
-
-    decoder_residual: bool = True
-    projection_layers: int = 1
-    projection_ratio: float = 2.0
 
 
 class FixedPositionalEncoder(nn.Module):
@@ -88,9 +74,9 @@ class BlockEncoder(nn.Module):
 
 
 class DecoderBase(nn.Module):
-    decoder_cfg: D2vDecoderConfig
+    decoder_cfg: AudioDecoderConfig
 
-    def __init__(self, cfg: D2vDecoderConfig):
+    def __init__(self, cfg: AudioDecoderConfig):
         super().__init__()
 
         self.decoder_cfg = cfg
@@ -114,7 +100,7 @@ class DecoderBase(nn.Module):
 
 
 class Decoder1d(DecoderBase):
-    def __init__(self, cfg: D2vDecoderConfig, input_dim):
+    def __init__(self, cfg: AudioDecoderConfig, input_dim):
         super().__init__(cfg)
 
         def make_block(in_dim):
