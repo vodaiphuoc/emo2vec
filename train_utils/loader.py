@@ -33,14 +33,14 @@ def _collator(examples: List[Dict[str, Union[int, str, List[float]]]]):
         example['data_array'].extend([0]*(batch_max_length - current_length))
         source_tensor_list.append(torch.tensor(example['data_array'], dtype= ARR_DTYPE))
         padding_mask[_ith, current_length: ] = True
-        labels.append(torch.tensor(example['emotion_id'], dtype= LABEL_DTYPE))
+        labels.append(example['emotion_id'])
 
     return (
         {
             "source": torch.cat(source_tensor_list, dim=0),
             "padding_mask": padding_mask
         },
-        torch.cat(labels, dim=0)
+        torch.tensor(labels, dtype= LABEL_DTYPE)
     )
 
 def get_dataloader(training_config: TrainingConfig):
