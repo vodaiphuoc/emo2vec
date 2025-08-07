@@ -140,10 +140,3 @@ def from_dict(cls: Type[T], data: Dict[str, Any]) -> T:
                 field_values[field.name] = field_value
 
     return cls(**field_values)
-
-from omegaconf import OmegaConf
-config = OmegaConf.load("ckpt/config.yaml")
-
-res = from_dict(MainConfig,OmegaConf.to_object(config))
-
-print(res.model_conf)
