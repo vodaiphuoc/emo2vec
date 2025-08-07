@@ -27,7 +27,7 @@ train_dl, test_dl = get_dataloader(training_config= traininig_config)
 
 
 for inputs, labels in train_dl:
-    inputs = {k: v.to(device) for k,v in inputs}
+    inputs = {k: v.to(device) for k,v in inputs.items()}
     labels = labels.to(device)
 
     model(**inputs)
