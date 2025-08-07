@@ -1,6 +1,7 @@
 upstream/
 myenv/
-train_utils/
+.cache_datasets
+train_utils_old/
 FunASR/
 *.pyc
 ckpt/*
