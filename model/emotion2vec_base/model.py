@@ -4,34 +4,15 @@ import torch
 import logging
 import numpy as np
 from functools import partial
-from omegaconf import OmegaConf, DictConfig
 import torch.nn.functional as F
-from contextlib import contextmanager
-from distutils.version import LooseVersion
-from typing import TypedDict
 import dataclasses
 
 from .modules import AltBlock
 from .audio import AudioEncoder
 from ..utils import load_audio_text_image_video
-
+from ..types import ModelConfig
 
 logger = logging.getLogger(__name__)
-if LooseVersion(torch.__version__) >= LooseVersion("1.6.0"):
-    from torch.cuda.amp import autocast
-else:
-    # Nothing to do if torch<1.6.0
-    @contextmanager
-    def autocast(enabled=True):
-        yield
-
-class PretrainEmotion2vecKwargs(TypedDict):
-    r"""
-    Kwargs for init Pretrained model
-    Args:
-        model_conf (DictConfig): config of model for .ymal file
-    """
-    model_conf: DictConfig
 
 @dataclasses.dataclass
 class PretrainOutput:
@@ -40,74 +21,70 @@ class PretrainOutput:
     layer_results: torch.Tensor
     mask: torch.Tensor
 
-
 class Emotion2vec(torch.nn.Module):
-    def __init__(self, **kwargs: PretrainEmotion2vecKwargs):
+    def __init__(self, model_conf: ModelConfig):
         r"""
         Args:
-            kwargs (PretrainEmotion2vecKwargs): kwargs to init
+            model_conf (ModelConfig): config of model
         """
         super().__init__()
-        # import pdb; pdb.set_trace()
-        cfg = OmegaConf.create(kwargs["model_conf"])
-        self.cfg = cfg
+        cfg = model_conf
+        self.cfg = model_conf
 
         make_layer_norm = partial(
-            torch.nn.LayerNorm, eps=cfg.get("norm_eps"), elementwise_affine=cfg.get("norm_affine")
+            torch.nn.LayerNorm, eps=cfg.norm_eps, elementwise_affine=cfg.norm_affine
         )
 
         def make_block(drop_path, dim=None, heads=None):
             return AltBlock(
-                cfg.get("embed_dim") if dim is None else dim,
-                cfg.get("num_heads") if heads is None else heads,
-                cfg.get("mlp_ratio"),
+                cfg.embed_dim if dim is None else dim,
+                cfg.num_heads if heads is None else heads,
+                cfg.mlp_ratio,
                 qkv_bias=True,
-                drop=cfg.get("encoder_dropout"),
-                attn_drop=cfg.get("attention_dropout"),
-                mlp_drop=cfg.get("activation_dropout"),
-                post_mlp_drop=cfg.get("post_mlp_drop"),
+                drop=cfg.encoder_dropout,
+                attn_drop=cfg.attention_dropout,
+                mlp_drop=cfg.activation_dropout,
+                post_mlp_drop=cfg.post_mlp_drop,
                 drop_path=drop_path,
                 norm_layer=make_layer_norm,
-                layer_norm_first=cfg.get("layer_norm_first"),
-                ffn_targets=not cfg.get("end_of_block_targets"),
+                layer_norm_first=cfg.layer_norm_first,
+                ffn_targets=not cfg.end_of_block_targets,
             )
 
         self.alibi_biases = {}
-        self.modality_encoders = torch.nn.ModuleDict()
-
-        enc = AudioEncoder(
+        self.feature_extractor = AudioEncoder(
             cfg.modalities.audio,
-            cfg.get("embed_dim"),
+            cfg.embed_dim,
             make_block,
             make_layer_norm,
-            cfg.get("layer_norm_first"),
+            cfg.layer_norm_first,
             self.alibi_biases,
         )
-        self.modality_encoders["AUDIO"] = enc
+        
 
         self.ema = None
 
-        self.average_top_k_layers = cfg.get("average_top_k_layers")
-        self.loss_beta = cfg.get("loss_beta")
-        self.loss_scale = cfg.get("loss_scale")
+        self.average_top_k_layers = cfg.average_top_k_layers
+        self.loss_beta = cfg.loss_beta
+        self.loss_scale = cfg.loss_scale
 
-        self.dropout_input = torch.nn.Dropout(cfg.get("dropout_input"))
+        self.dropout_input = torch.nn.Dropout(cfg.dropout_input)
 
         dpr = np.linspace(
-            cfg.get("start_drop_path_rate"), cfg.get("end_drop_path_rate"), cfg.get("depth")
+            cfg.start_drop_path_rate, cfg.end_drop_path_rate, cfg.depth
         )
 
-        self.blocks = torch.nn.ModuleList([make_block(dpr[i]) for i in range(cfg.get("depth"))])
+        self.blocks = torch.nn.ModuleList([make_block(dpr[i]) for i in range(cfg.depth)])
 
         self.norm = None
-        if cfg.get("layer_norm_first"):
-            self.norm = make_layer_norm(cfg.get("embed_dim"))
+        if cfg.layer_norm_first:
+            self.norm = make_layer_norm(cfg.embed_dim)
 
-        vocab_size = kwargs.get("vocab_size", -1)
+        vocab_size = cfg.vocab_size
         
         self.proj = None
         if vocab_size > 0:
-            self.proj = torch.nn.Linear(cfg.get("embed_dim"), vocab_size)
+            self.proj = torch.nn.Linear(cfg.embed_dim, vocab_size)
 
     def forward(
             self,
@@ -128,17 +105,14 @@ class Emotion2vec(torch.nn.Module):
         Returns:
             instant of `PretrainOutput`
         """
-
-        feature_extractor = self.modality_encoders["AUDIO"]
-
         mask_seeds = None
 
-        extractor_out = feature_extractor(
+        extractor_out = self.feature_extractor(
             source,
             padding_mask,
             mask,
             remove_masked=not features_only or force_remove_masked,
-            clone_batch=self.cfg.get("clone_batch") if not features_only else 1,
+            clone_batch=self.cfg.clone_batch if not features_only else 1,
             mask_seeds=mask_seeds,
             precomputed_mask=precomputed_mask,
         )
@@ -156,8 +130,8 @@ class Emotion2vec(torch.nn.Module):
         for i, blk in enumerate(self.blocks):
             if (
                 not self.training
-                or self.cfg.get("layerdrop", 0) == 0
-                or (np.random.random() > self.cfg.get("layerdrop", 0))
+                or self.cfg.layerdrop == 0
+                or (np.random.random() > self.cfg.layerdrop)
             ):
                 ab = masked_alibi_bias
                 if ab is not None and alibi_scale is not None:
@@ -172,15 +146,16 @@ class Emotion2vec(torch.nn.Module):
                 if features_only:
                     layer_results.append(lr)
 
+
         if self.norm is not None:
             x = self.norm(x)
 
         if features_only:
             if remove_extra_tokens:
-                x = x[:, feature_extractor.modality_cfg.num_extra_tokens :]
+                x = x[:, self.feature_extractor.modality_cfg.num_extra_tokens :]
                 if masked_padding_mask is not None:
                     masked_padding_mask = masked_padding_mask[
-                        :, feature_extractor.modality_cfg.num_extra_tokens :
+                        :, self.feature_extractor.modality_cfg.num_extra_tokens :
                     ]
 
             return PretrainOutput(**{
@@ -232,12 +207,13 @@ class Emotion2vec(torch.nn.Module):
             data_type=kwargs.get("data_type", "sound"),
             tokenizer=tokenizer,
         )
+
         time2 = time.perf_counter()
         meta_data["load_data"] = f"{time2 - time1:0.3f}"
         meta_data["batch_data_time"] = len(audio_sample_list[0]) / kwargs.get("fs", 16000)
 
         results = []
-        output_dir = kwargs.get("output_dir")
+        output_dir = kwargs.output_dir
         if output_dir:
             os.makedirs(output_dir, exist_ok=True)
         for i, wav in enumerate(audio_sample_list):
