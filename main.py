@@ -19,7 +19,7 @@ model = E2VftModel(
     num_classes = 5, 
     pretrain_cfg = pretrain_cfg,
     pretrain_state_dict = pretrain_state_dict
-).to(device)
+).to(torch.float16).to(device)
 
 traininig_config = TrainingConfig()
 
