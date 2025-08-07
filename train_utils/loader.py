@@ -50,8 +50,8 @@ def get_dataloader(training_config: TrainingConfig):
 
     dataset = dataset.train_test_split(test_size=training_config.test_size, shuffle=True)
 
-    train_ds = _pre_process_dataset(ds['train'])
-    test_ds = _pre_process_dataset(ds['test'])
+    train_ds = _pre_process_dataset(dataset['train'])
+    test_ds = _pre_process_dataset(dataset['test'])
 
     train_dataloader = DataLoader(
         train_ds, 
