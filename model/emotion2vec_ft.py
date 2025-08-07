@@ -4,7 +4,7 @@ import torch.nn as nn
 from collections import OrderedDict
 
 from .emotion2vec_base.model import Emotion2vec, PretrainOutput
-from omegaconf import DictConfig
+from .types import ModelConfig
 
 class E2VftModel(torch.nn.Module):
     
@@ -12,7 +12,7 @@ class E2VftModel(torch.nn.Module):
             self,
             head_dim:int, 
             num_classes:int, 
-            pretrain_cfg: DictConfig,
+            pretrain_cfg: ModelConfig,
             pretrain_state_dict: OrderedDict
         )->None:
         super().__init__()
