@@ -3,7 +3,7 @@ from typing import Dict
 from typing import Union
 from collections import OrderedDict
 from io import BytesIO
-from omegaconf import OmegaConf, DictConfig
+from omegaconf import OmegaConf
 import os
 
 
@@ -18,6 +18,7 @@ import torch.optim
 import pdb
 import copy
 
+from .types import from_dict, ModelConfig
 
 # def load_pretrained_model(
 #     path: str,
@@ -124,7 +125,7 @@ def load_pretrained_model(download_dir: str)->OrderedDict:
     return state_dict['model']
 
 
-def get_pretrain_config(download_dir:str)->DictConfig:
+def get_pretrain_config(download_dir:str)->ModelConfig:
     r"""
     Load pretrain config from hf repo
     """
@@ -134,5 +135,4 @@ def get_pretrain_config(download_dir:str)->DictConfig:
         raise FileNotFoundError
     
     config = OmegaConf.load(config_path)
-    
-    return config.get("model_conf")
+    return from_dict(ModelConfig,OmegaConf.to_object(config.get("model_conf")))
