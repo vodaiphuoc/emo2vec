@@ -25,9 +25,12 @@ traininig_config = TrainingConfig()
 
 train_dl, test_dl = get_dataloader(training_config= traininig_config)
 
+try:
+    for inputs, labels in train_dl:
+        inputs = {k: v.to(device) for k,v in inputs.items()}
+        labels = labels.to(device)
 
-for inputs, labels in train_dl:
-    inputs = {k: v.to(device) for k,v in inputs.items()}
-    labels = labels.to(device)
+        model(**inputs)
 
-    model(**inputs)
+except Exception as e:
+    print(e)
