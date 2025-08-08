@@ -47,7 +47,7 @@ for _epoch in range(traininig_config.num_epochs):
         optimizer.step()
 
         mean_train_loss += loss.item()
-        mean_train_acc += len(torch.where(torch.argmax(predicts, dim= -1) == labels)[0])
+        mean_train_acc += len(torch.where(torch.argmax(predicts, dim= -1) == labels)[0])/traininig_config.batch_size
 
     mean_train_loss /= len(train_dl)
     mean_train_acc /= len(train_dl)
@@ -64,7 +64,7 @@ for _epoch in range(traininig_config.num_epochs):
 
             val_loss = torch.nn.functional.cross_entropy(val_predicts, val_labels)
             mean_test_loss += val_loss.item()
-            mean_test_acc += len(torch.where(torch.argmax(val_predicts, dim= -1) == val_labels)[0])
+            mean_test_acc += len(torch.where(torch.argmax(val_predicts, dim= -1) == val_labels)[0])/traininig_config.batch_size
 
         mean_test_loss /= len(test_dl)
         mean_test_acc /= len(test_dl)
