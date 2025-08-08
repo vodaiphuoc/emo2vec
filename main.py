@@ -38,6 +38,11 @@ optimizer = torch.optim.AdamW(
     lr= traininig_config.learning_rate
 )
 
+scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+    optimizer, 
+    T_max = traininig_config.num_epochs
+)
+
 for _epoch in range(traininig_config.num_epochs):
     mean_train_loss = 0.0
     mean_train_acc = 0.0
@@ -88,3 +93,5 @@ validation:
     acc: {mean_test_acc}
 """
     print(msg)
+
+    scheduler.step()
