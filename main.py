@@ -1,3 +1,4 @@
+import torch.optim.adamw
 from model import (
     E2VftModel,
     download_repo_from_hf,
@@ -27,12 +28,22 @@ traininig_config = TrainingConfig()
 
 train_dl, test_dl = get_dataloader(training_config= traininig_config)
 
+optimizer = torch.optim.AdamW(
+    params=model.parameters(), 
+    lr= traininig_config.learning_rate
+)
+
 try:
     for _ith, (inputs, labels) in enumerate(train_dl):
         inputs = {k: v.to(device) for k,v in inputs.items()}
         labels = labels.to(device)
 
-        model(**inputs)
+        optimizer.zero_grad()
+        predicts = model(**inputs)
+
+        loss = torch.nn.functional.cross_entropy(predicts, labels)
+        loss.backward()
+        optimizer.step()
 
         if _ith == 10:
             print('end')
