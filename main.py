@@ -15,9 +15,8 @@ pretrain_state_dict = load_pretrained_model(download_dir= local_dir)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-model = E2VftModel(
-    head_dim = 100, 
-    num_classes = 5, 
+model = E2VftModel( 
+    num_classes = 4, 
     pretrain_cfg = pretrain_cfg,
     pretrain_state_dict = pretrain_state_dict
 ).to(torch.float16).to(device)
