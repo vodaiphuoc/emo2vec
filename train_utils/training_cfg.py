@@ -7,3 +7,4 @@ class TrainingConfig:
     learning_rate: float = 0.001
     num_workers: int = 1
     prefetch_factor: int = 1
+    num_epochs: int  = 20

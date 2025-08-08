@@ -43,7 +43,7 @@ def _collator(examples: List[Dict[str, Union[int, str, List[float]]]]):
         labels.append(example['emotion_id'])
 
     stacked_source = torch.stack(source_tensor_list, dim=0)
-    print('_collator, stacked_source shape: ', stacked_source.shape)
+    
     return (
         {
             "source": stacked_source,
