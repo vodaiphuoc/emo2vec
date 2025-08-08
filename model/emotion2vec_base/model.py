@@ -17,9 +17,9 @@ logger = logging.getLogger(__name__)
 @dataclasses.dataclass
 class PretrainOutput:
     x: torch.Tensor
-    padding_mask: torch.Tensor
-    layer_results: torch.Tensor
-    mask: torch.Tensor
+    padding_mask: torch.Tensor|None
+    layer_results: torch.Tensor|None
+    mask: torch.Tensor|None
 
 class Emotion2vec(torch.nn.Module):
     def __init__(self, model_conf: ModelConfig):
@@ -163,6 +163,13 @@ class Emotion2vec(torch.nn.Module):
                 "padding_mask": masked_padding_mask,
                 "layer_results": layer_results,
                 "mask": encoder_mask,
+            })
+        else:
+            return PretrainOutput(**{
+                "x": x,
+                "padding_mask": None,
+                "layer_results": None,
+                "mask": None,
             })
 
     def extract_features(
