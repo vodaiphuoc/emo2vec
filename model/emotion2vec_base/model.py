@@ -107,7 +107,7 @@ class Emotion2vec(torch.nn.Module):
         """
         mask_seeds = None
 
-        print('self.feature_extractor input, source shape: ', source.shape)
+        # print('self.feature_extractor input, source shape: ', source.shape)
         extractor_out = self.feature_extractor(
             source,
             padding_mask,
@@ -119,7 +119,7 @@ class Emotion2vec(torch.nn.Module):
         )
 
         x = extractor_out["x"]
-        print('self.feature_extractor, x shape: ', x.shape)
+        # print('self.feature_extractor, x shape: ', x.shape)
         encoder_mask = extractor_out["encoder_mask"]
         masked_padding_mask = extractor_out["padding_mask"]
         masked_alibi_bias = extractor_out.get("alibi_bias", None)
@@ -145,7 +145,7 @@ class Emotion2vec(torch.nn.Module):
                     padding_mask=masked_padding_mask,
                     alibi_bias=ab,
                 )
-                print('blk, x shape: ', x.shape)
+                # print('blk, x shape: ', x.shape)
                 if features_only:
                     layer_results.append(lr)
 
@@ -168,7 +168,7 @@ class Emotion2vec(torch.nn.Module):
                 "mask": encoder_mask,
             })
         else:
-            print('features_only branch')
+            # print('features_only branch')
             return PretrainOutput(**{
                 "x": x,
                 "padding_mask": None,

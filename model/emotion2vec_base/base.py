@@ -149,7 +149,7 @@ class ModalitySpecificEncoder(nn.Module):
                 x = self.local_encoder(features)
 
         x = self.project_features(x)
-        print('local_features, output shape: ', x.shape)
+        # print('local_features, output shape: ', x.shape)
         return x
 
     def contextualized_features(
@@ -195,7 +195,7 @@ class ModalitySpecificEncoder(nn.Module):
                 if padding_mask is not None:
                     padding_mask = padding_mask.repeat_interleave(clone_batch, 0)
 
-            print('self.compute_mask, input shape: ', x.shape)
+            # print('self.compute_mask, input shape: ', x.shape)
             x, mask_info = self.compute_mask(
                 x,
                 padding_mask,
@@ -203,7 +203,7 @@ class ModalitySpecificEncoder(nn.Module):
                 apply=self.relative_positional_encoder is not None or not remove_masked,
                 precomputed_mask=precomputed_mask,
             )
-            print('self.compute_mask, output shape: ', x.shape)
+            # print('self.compute_mask, output shape: ', x.shape)
 
         if self.relative_positional_encoder is not None:
             x_pos = self.relative_positional_encoder(x)
@@ -211,12 +211,12 @@ class ModalitySpecificEncoder(nn.Module):
         masked_padding_mask = padding_mask
 
         if mask and remove_masked:
-            print('mask and remove_masked branch')
+            # print('mask and remove_masked branch')
             x = mask_info.x_unmasked
             if x_pos is not None:
-                print('before x + gather_unmasked(x_pos, mask_info): ', x.shape)
+                # print('before x + gather_unmasked(x_pos, mask_info): ', x.shape)
                 x = x + gather_unmasked(x_pos, mask_info)
-                print('after x + gather_unmasked(x_pos, mask_info): ', x.shape)
+                # print('after x + gather_unmasked(x_pos, mask_info): ', x.shape)
 
             if padding_mask is not None and padding_mask.any():
                 masked_padding_mask = gather_unmasked_mask(padding_mask, mask_info)
@@ -253,7 +253,7 @@ class ModalitySpecificEncoder(nn.Module):
                 alibi_bias = masked_alibi(alibi_bias, mask_info)
 
 
-        print('before self.extra_tokens, x shape: ',  x.shape)
+        # print('before self.extra_tokens, x shape: ',  x.shape)
         if self.extra_tokens is not None:
             num = self.extra_tokens.size(1)
             x = torch.cat([self.extra_tokens.expand(x.size(0), -1, -1), x], dim=1)
@@ -265,7 +265,7 @@ class ModalitySpecificEncoder(nn.Module):
                 alibi_bias = F.pad(alibi_bias, (num, 0, num, 0))
 
 
-        print('self.context_encoder, input shape: ',  x.shape)
+        # print('self.context_encoder, input shape: ',  x.shape)
         x = self.context_encoder(
             x,
             masked_padding_mask,
