@@ -23,7 +23,7 @@ class E2VftModel(torch.nn.Module):
 
     def forward(
             self,
-            source,
+            source: torch.Tensor,
             target=None,
             id=None,
             mode=None,

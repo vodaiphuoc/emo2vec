@@ -42,8 +42,6 @@ for _epoch in range(traininig_config.num_epochs):
         optimizer.zero_grad()
         predicts = model(**inputs)
 
-        print('predicts: ', predicts)
-
         loss = torch.nn.functional.cross_entropy(predicts, labels)
         loss.backward()
         optimizer.step()
