@@ -7,6 +7,8 @@ import torch
 ARR_DTYPE = torch.float16
 LABEL_DTYPE = torch.int16
 
+MAX_ARR_LENGTH = 40000
+
 def _pre_process_dataset(dataset: datasets.Dataset)->datasets.Dataset:
     r"""
     Select only main columns
@@ -22,7 +24,8 @@ def _pre_process_dataset(dataset: datasets.Dataset)->datasets.Dataset:
     )
 
 def _collator(examples: List[Dict[str, Union[int, str, List[float]]]]):
-    batch_max_length = max([len(exp['data_array']) for exp in examples])
+    # batch_max_length = max([len(exp['data_array']) for exp in examples])
+    batch_max_length =  MAX_ARR_LENGTH
 
     source_tensor_list = []
     padding_mask = torch.BoolTensor(torch.Size([len(examples), batch_max_length])).fill_(False)
@@ -30,9 +33,13 @@ def _collator(examples: List[Dict[str, Union[int, str, List[float]]]]):
 
     for _ith, example in enumerate(examples):
         current_length = len(example['data_array'])
-        example['data_array'].extend([0]*(batch_max_length - current_length))
+        if current_length > MAX_ARR_LENGTH:
+            example['data_array'] = example['data_array'][:MAX_ARR_LENGTH]
+        else:
+            example['data_array'].extend([0]*(batch_max_length - current_length))
+            padding_mask[_ith, current_length: ] = True
+        
         source_tensor_list.append(torch.tensor(example['data_array'], dtype= ARR_DTYPE))
-        padding_mask[_ith, current_length: ] = True
         labels.append(example['emotion_id'])
 
     stacked_source = torch.stack(source_tensor_list, dim=0)
