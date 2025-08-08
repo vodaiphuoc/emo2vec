@@ -214,7 +214,9 @@ class ModalitySpecificEncoder(nn.Module):
             print('mask and remove_masked branch')
             x = mask_info.x_unmasked
             if x_pos is not None:
+                print('before x + gather_unmasked(x_pos, mask_info): ', x.shape)
                 x = x + gather_unmasked(x_pos, mask_info)
+                print('after x + gather_unmasked(x_pos, mask_info): ', x.shape)
 
             if padding_mask is not None and padding_mask.any():
                 masked_padding_mask = gather_unmasked_mask(padding_mask, mask_info)
