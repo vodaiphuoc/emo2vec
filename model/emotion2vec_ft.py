@@ -35,6 +35,9 @@ class E2VftModel(torch.nn.Module):
             precomputed_mask=None,
             **kwargs
         )->torch.Tensor:
+
+        source = nn.functional.layer_norm(source, source.shape)
+
         pretrain_outputs: PretrainOutput = self._pretrain_model(
             source = source,
             target = target,
