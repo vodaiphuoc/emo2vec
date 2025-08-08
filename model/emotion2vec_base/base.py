@@ -195,6 +195,7 @@ class ModalitySpecificEncoder(nn.Module):
                 if padding_mask is not None:
                     padding_mask = padding_mask.repeat_interleave(clone_batch, 0)
 
+            print('self.compute_mask, input shape: ', x.shape)
             x, mask_info = self.compute_mask(
                 x,
                 padding_mask,
@@ -202,6 +203,7 @@ class ModalitySpecificEncoder(nn.Module):
                 apply=self.relative_positional_encoder is not None or not remove_masked,
                 precomputed_mask=precomputed_mask,
             )
+            print('self.compute_mask, output shape: ', x.shape)
 
         if self.relative_positional_encoder is not None:
             x_pos = self.relative_positional_encoder(x)
