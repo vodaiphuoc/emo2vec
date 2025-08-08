@@ -53,12 +53,12 @@ class Emotion2vec(torch.nn.Module):
 
         self.alibi_biases = {}
         self.feature_extractor = AudioEncoder(
-            cfg.modalities.audio,
-            cfg.embed_dim,
-            make_block,
-            make_layer_norm,
-            cfg.layer_norm_first,
-            self.alibi_biases,
+            modality_cfg = cfg.modalities.audio,
+            embed_dim = cfg.embed_dim,
+            make_block = make_block,
+            norm_layer = make_layer_norm,
+            layer_norm_first = cfg.layer_norm_first,
+            alibi_biases = self.alibi_biases,
         )
         
 
@@ -107,6 +107,7 @@ class Emotion2vec(torch.nn.Module):
         """
         mask_seeds = None
 
+        print('self.feature_extractor input, source shape: ', source.shape)
         extractor_out = self.feature_extractor(
             source,
             padding_mask,
