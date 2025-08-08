@@ -7,7 +7,7 @@ import torch
 ARR_DTYPE = torch.float32
 LABEL_DTYPE = torch.int64
 
-MAX_ARR_LENGTH = 40000
+MAX_ARR_LENGTH = 70000
 
 def _pre_process_dataset(dataset: datasets.Dataset)->datasets.Dataset:
     r"""

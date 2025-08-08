@@ -20,8 +20,8 @@ class E2VftModel(torch.nn.Module):
         assert isinstance(pretrain_state_dict, OrderedDict)
         self._pretrain_model.load_state_dict(pretrain_state_dict)
 
-        self.head_pre = torch.nn.Linear(pretrain_cfg.embed_dim, pretrain_cfg.embed_dim)
-        self.head_out = torch.nn.Linear(pretrain_cfg.embed_dim, num_classes)
+        self.head_pre = torch.nn.Linear(pretrain_cfg.embed_dim, pretrain_cfg.embed_dim//2)
+        self.head_out = torch.nn.Linear(pretrain_cfg.embed_dim//2, num_classes)
 
     def forward(
             self,
