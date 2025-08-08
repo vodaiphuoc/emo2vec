@@ -12,7 +12,7 @@ from typing import Optional, Callable
 from .fairseq_modules import compute_mask_indices
 from .fairseq_modules import GradMultiply
 from .fairseq_modules import index_put
-
+from ..types import AudioConfig
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ MaskInfo = namedtuple("MaskInfo", ["x_unmasked", "mask", "ids_restore", "ids_kee
 class ModalitySpecificEncoder(nn.Module):
     def __init__(
         self,
-        modality_cfg,
+        modality_cfg: AudioConfig,
         embed_dim: int,
         local_encoder: nn.Module,
         project_features: nn.Module,
