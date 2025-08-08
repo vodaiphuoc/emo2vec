@@ -10,7 +10,6 @@ class E2VftModel(torch.nn.Module):
     
     def __init__(
             self,
-            head_dim:int, 
             num_classes:int, 
             pretrain_cfg: ModelConfig,
             pretrain_state_dict: OrderedDict
@@ -20,7 +19,7 @@ class E2VftModel(torch.nn.Module):
         self._pretrain_model: Emotion2vec = Emotion2vec(model_conf = pretrain_cfg)
         assert isinstance(pretrain_state_dict, OrderedDict)
         self._pretrain_model.load_state_dict(pretrain_state_dict)
-        self.head = torch.nn.Linear(head_dim, num_classes)
+        self.head = torch.nn.Linear(pretrain_cfg.embed_dim, num_classes)
 
     def forward(
             self,
