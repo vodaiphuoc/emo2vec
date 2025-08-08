@@ -21,6 +21,14 @@ model = E2VftModel(
     pretrain_state_dict = pretrain_state_dict
 ).to(torch.float32).to(device)
 
+for name, module in model.named_modules():
+    if '_pretrain_model' in name:
+        print('name: ', name)
+        for params in module.get_parameter():
+            params.requires_grad = False
+    else:
+        for params in module.get_parameter():
+            params.requires_grad = True
 
 traininig_config = TrainingConfig()
 
