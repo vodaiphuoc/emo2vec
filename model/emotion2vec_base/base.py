@@ -28,7 +28,7 @@ class ModalitySpecificEncoder(nn.Module):
         embed_dim: int,
         local_encoder: nn.Module,
         project_features: nn.Module,
-        fixed_positional_encoder: Optional[nn.Module],
+        fixed_positional_encoder: Optional[nn.Module]|None,
         relative_positional_encoder: Optional[nn.Module],
         context_encoder: nn.Module,
         decoder: nn.Module,
@@ -246,6 +246,8 @@ class ModalitySpecificEncoder(nn.Module):
             if mask_info is not None and remove_masked:
                 alibi_bias = masked_alibi(alibi_bias, mask_info)
 
+
+        print('before self.extra_tokens, x shape: ',  x.shape)
         if self.extra_tokens is not None:
             num = self.extra_tokens.size(1)
             x = torch.cat([self.extra_tokens.expand(x.size(0), -1, -1), x], dim=1)
@@ -256,6 +258,8 @@ class ModalitySpecificEncoder(nn.Module):
                 # B x H x T x T
                 alibi_bias = F.pad(alibi_bias, (num, 0, num, 0))
 
+
+        print('self.context_encoder, input shape: ',  x.shape)
         x = self.context_encoder(
             x,
             masked_padding_mask,
