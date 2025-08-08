@@ -47,7 +47,7 @@ def _collator(examples: List[Dict[str, Union[int, str, List[float]]]]):
     return (
         {
             "source": stacked_source,
-            "padding_mask": padding_mask
+            # "padding_mask": padding_mask
         },
         torch.tensor(labels, dtype= LABEL_DTYPE)
     )
