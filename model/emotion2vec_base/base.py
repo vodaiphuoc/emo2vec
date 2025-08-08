@@ -209,7 +209,9 @@ class ModalitySpecificEncoder(nn.Module):
             x_pos = self.relative_positional_encoder(x)
 
         masked_padding_mask = padding_mask
+
         if mask and remove_masked:
+            print('mask and remove_masked branch')
             x = mask_info.x_unmasked
             if x_pos is not None:
                 x = x + gather_unmasked(x_pos, mask_info)
@@ -359,9 +361,7 @@ class ModalitySpecificEncoder(nn.Module):
                 mask_info = None
 
         if apply:
-            print('self.apply_mask, input shape: ', x.shape)
             x = self.apply_mask(x, mask_info)
-            print('self.apply_mask, output shape: ', x.shape)
 
         return x, mask_info
 
