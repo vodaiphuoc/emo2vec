@@ -35,9 +35,11 @@ def _collator(examples: List[Dict[str, Union[int, str, List[float]]]]):
         padding_mask[_ith, current_length: ] = True
         labels.append(example['emotion_id'])
 
+    stacked_source = torch.stack(source_tensor_list, dim=0)
+    print('_collator, stacked_source shape: ', stacked_source.shape)
     return (
         {
-            "source": torch.stack(source_tensor_list, dim=0),
+            "source": stacked_source,
             "padding_mask": padding_mask
         },
         torch.tensor(labels, dtype= LABEL_DTYPE)
