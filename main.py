@@ -24,10 +24,10 @@ model = E2VftModel(
 for name, module in model.named_modules():
     if '_pretrain_model' in name:
         print('name: ', name)
-        for params in module.get_parameter():
+        for params in module.parameters():
             params.requires_grad = False
     else:
-        for params in module.get_parameter():
+        for params in module.parameters():
             params.requires_grad = True
 
 traininig_config = TrainingConfig()
