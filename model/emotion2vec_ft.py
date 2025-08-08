@@ -29,7 +29,7 @@ class E2VftModel(torch.nn.Module):
             mode=None,
             padding_mask=None,
             mask=False,
-            features_only=False,
+            features_only=True,
             force_remove_masked=False,
             remove_extra_tokens=True,
             precomputed_mask=None,
