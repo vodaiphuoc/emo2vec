@@ -359,7 +359,9 @@ class ModalitySpecificEncoder(nn.Module):
                 mask_info = None
 
         if apply:
+            print('self.apply_mask, input shape: ', x.shape)
             x = self.apply_mask(x, mask_info)
+            print('self.apply_mask, output shape: ', x.shape)
 
         return x, mask_info
 
