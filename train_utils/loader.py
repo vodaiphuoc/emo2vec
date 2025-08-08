@@ -4,7 +4,7 @@ from typing import List, Dict, Union
 from .training_cfg import TrainingConfig
 import torch
 
-ARR_DTYPE = torch.float16
+ARR_DTYPE = torch.float32
 LABEL_DTYPE = torch.int64
 
 MAX_ARR_LENGTH = 40000
