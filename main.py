@@ -28,11 +28,15 @@ traininig_config = TrainingConfig()
 train_dl, test_dl = get_dataloader(training_config= traininig_config)
 
 try:
-    for inputs, labels in train_dl:
+    for _ith, (inputs, labels) in enumerate(train_dl):
         inputs = {k: v.to(device) for k,v in inputs.items()}
         labels = labels.to(device)
 
         model(**inputs)
+
+        if _ith == 10:
+            print('end')
+            break
 
 except Exception as e:
     print(e)

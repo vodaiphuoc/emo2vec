@@ -149,6 +149,7 @@ class ModalitySpecificEncoder(nn.Module):
                 x = self.local_encoder(features)
 
         x = self.project_features(x)
+        print('local_features, output shape: ', x.shape)
         return x
 
     def contextualized_features(
