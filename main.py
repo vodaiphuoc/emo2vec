@@ -21,6 +21,8 @@ model = E2VftModel(
     pretrain_state_dict = pretrain_state_dict
 ).to(torch.float16).to(device)
 
+model = model.train()
+
 traininig_config = TrainingConfig()
 
 train_dl, test_dl = get_dataloader(training_config= traininig_config)
