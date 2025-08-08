@@ -5,7 +5,7 @@ from .training_cfg import TrainingConfig
 import torch
 
 ARR_DTYPE = torch.float16
-LABEL_DTYPE = torch.int32
+LABEL_DTYPE = torch.int64
 
 MAX_ARR_LENGTH = 40000
 
