@@ -48,5 +48,6 @@ class E2VftModel(torch.nn.Module):
             precomputed_mask=precomputed_mask,
             **kwargs
         )
+        print('feature out shape: ', pretrain_outputs.x.shape)
         return self.head(pretrain_outputs.x)
 
