@@ -93,7 +93,7 @@ class Emotion2vec(torch.nn.Module):
             id=None,
             mode=None,
             padding_mask=None,
-            mask=True,
+            mask=False,
             features_only=False,
             force_remove_masked=False,
             remove_extra_tokens=True,
