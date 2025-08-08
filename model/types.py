@@ -6,6 +6,21 @@ T = TypeVar('T')
 
 @dataclasses.dataclass
 class AudioDecoderConfig:
+    """
+    AudioDecoderConfig
+
+    Attributes:
+        decoder_dim (int):
+        decoder_groups (int):
+        decoder_kernel (int):
+        decoder_layers (int):
+        input_dropout (float):
+        add_positions_masked (bool):
+        add_positions_all (bool):
+        decoder_residual (bool):
+        projection_layers (int):
+        projection_ratio (float):
+    """
     decoder_dim:int
     decoder_groups:int
     decoder_kernel:int
