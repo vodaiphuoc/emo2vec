@@ -7,6 +7,7 @@ from model import (
 import torch
 from train_utils.loader import get_dataloader
 from train_utils.training_cfg import TrainingConfig
+import traceback
 
 local_dir = download_repo_from_hf()
 pretrain_cfg = get_pretrain_config(download_dir=local_dir)
@@ -34,3 +35,4 @@ try:
 
 except Exception as e:
     print(e)
+    print(traceback.format_exc())
