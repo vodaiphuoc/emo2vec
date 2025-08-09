@@ -20,7 +20,7 @@ class E2VftModel(torch.nn.Module):
         assert isinstance(pretrain_state_dict, OrderedDict)
         self._pretrain_model.load_state_dict(pretrain_state_dict)
 
-        self.head_pre = torch.nn.Linear(pretrain_cfg.embed_dim*134, pretrain_cfg.embed_dim)
+        self.head_pre = torch.nn.Linear(pretrain_cfg.embed_dim*128, pretrain_cfg.embed_dim)
         self.drop_out_pre = torch.nn.Dropout(p=0.1)
         self.head_inter = torch.nn.Linear(pretrain_cfg.embed_dim, pretrain_cfg.embed_dim)
         self.drop_out_inter = torch.nn.Dropout(p=0.1)
