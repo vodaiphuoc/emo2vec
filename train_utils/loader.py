@@ -82,8 +82,8 @@ def train_test_split(ds: datasets.Dataset, ratio: float)->Tuple[datasets.Dataset
         test_ds_list.append(test_ds_result)
 
     return (
-        datasets.concatenate_datasets(train_ds_list),
-        datasets.concatenate_datasets(test_ds_list)
+        _pre_process_dataset(datasets.concatenate_datasets(train_ds_list)),
+        _pre_process_dataset(datasets.concatenate_datasets(test_ds_list))
     )
 
 def get_dataloader(training_config: TrainingConfig):
