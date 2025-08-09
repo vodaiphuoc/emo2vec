@@ -27,7 +27,7 @@ for name, module in model.named_modules():
         try:
             match_result = re.match(r"_pretrain_model.blocks\.(\d)", name)
 
-            if match_result is not None and int(match_result.groups()[0]) > 5:
+            if match_result is not None and int(match_result.groups()[0]) > 7:
                 for params in module.parameters():
                     params.requires_grad = True
 
@@ -53,7 +53,8 @@ train_dl, test_dl = get_dataloader(training_config= traininig_config)
 
 optimizer = torch.optim.AdamW(
     params=model.parameters(), 
-    lr= traininig_config.init_learning_rate
+    lr= traininig_config.init_learning_rate,
+    weight_decay=traininig_config.weight_decay
 )
 
 scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
