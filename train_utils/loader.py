@@ -1,8 +1,9 @@
 from torch.utils.data import DataLoader
 import datasets
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Tuple
 from .training_cfg import TrainingConfig
 import torch
+import random
 
 ARR_DTYPE = torch.float32
 LABEL_DTYPE = torch.int64
@@ -52,15 +53,49 @@ def _collator(examples: List[Dict[str, Union[int, str, List[float]]]]):
         torch.tensor(labels, dtype= LABEL_DTYPE)
     )
 
+
+def train_test_split(ds: datasets.Dataset, ratio: float)->Tuple[datasets.Dataset]:
+    emotion_set = set(ds['emotion'])
+
+    emotion2ids_mapping = {emo: [] for emo in emotion_set}
+
+    for _ith, exp in enumerate(ds):
+        emotion2ids_mapping[exp['emotion']].append(_ith)
+
+    train_ds_list = []
+    test_ds_list = []
+    from copy import deepcopy
+    for k, v in emotion2ids_mapping.items():
+        ids = deepcopy(v)
+        random.shuffle(ids)
+        test_length = int(len(ids)*ratio)
+        train = ids[:(len(ids)-test_length)]
+        test = ids[(len(ids)-test_length):]
+
+        train_ds_list.append(ds.select(indices= train, keep_in_memory=True))
+        test_ds_list.append(ds.select(indices= test, keep_in_memory=True))
+
+    return (
+        datasets.concatenate_datasets(train_ds_list), 
+        datasets.concatenate_datasets(test_ds_list)
+    )
+
 def get_dataloader(training_config: TrainingConfig):
 
     # source dataset doesnt have train and test sets
     dataset = datasets.load_dataset("hustep-lab/ViSEC")['train']
+    train_ds, test_ds = train_test_split(
+        ds= dataset, 
+        ratio= training_config.test_size
+    )
 
-    dataset = dataset.train_test_split(test_size=training_config.test_size, shuffle=True)
+    print('check label in train_ds: ', set(train_ds['emotion']))
+    for emo in set(train_ds['emotion']):
+        print(emo, len([ids for ids, exp in enumerate(train_ds) if exp['emotion'] == emo]))
 
-    train_ds = _pre_process_dataset(dataset['train'])
-    test_ds = _pre_process_dataset(dataset['test'])
+    print('check label in test_ds: ', set(test_ds['emotion']))
+    for emo in set(test_ds['emotion']):
+        print(emo, len([ids for ids, exp in enumerate(test_ds) if exp['emotion'] == emo]))
 
     train_dataloader = DataLoader(
         train_ds, 
