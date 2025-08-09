@@ -72,11 +72,17 @@ def train_test_split(ds: datasets.Dataset, ratio: float)->Tuple[datasets.Dataset
         train = ids[:(len(ids)-test_length)]
         test = ids[(len(ids)-test_length):]
 
-        train_ds_list.append(ds.select(indices= train, keep_in_memory=True))
-        test_ds_list.append(ds.select(indices= test, keep_in_memory=True))
+        train_ds_result = ds.select(indices= train, keep_in_memory=True)
+        test_ds_result = ds.select(indices= test, keep_in_memory=True)
+
+        print('train_ds_result: ', train_ds_result.column_names)
+        print('test_ds_result: ', test_ds_result.column_names)
+
+        train_ds_list.append(train_ds_result)
+        test_ds_list.append(test_ds_result)
 
     return (
-        datasets.concatenate_datasets(train_ds_list), 
+        datasets.concatenate_datasets(train_ds_list),
         datasets.concatenate_datasets(test_ds_list)
     )
 
@@ -89,11 +95,11 @@ def get_dataloader(training_config: TrainingConfig):
         ratio= training_config.test_size
     )
 
-    print('check label in train_ds: ', set(train_ds['emotion']))
+    print('check label in train_ds: ', set(train_ds['emotion']), train_ds.column_names)
     for emo in set(train_ds['emotion']):
         print(emo, len([ids for ids, exp in enumerate(train_ds) if exp['emotion'] == emo]))
 
-    print('check label in test_ds: ', set(test_ds['emotion']))
+    print('check label in test_ds: ', set(test_ds['emotion']), test_ds.column_names)
     for emo in set(test_ds['emotion']):
         print(emo, len([ids for ids, exp in enumerate(test_ds) if exp['emotion'] == emo]))
 
