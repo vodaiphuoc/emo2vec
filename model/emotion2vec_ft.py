@@ -56,7 +56,7 @@ class E2VftModel(torch.nn.Module):
             precomputed_mask=precomputed_mask,
             **kwargs
         )
-        B, F, D = pretrain_outputs.x
+        B, F, D = pretrain_outputs.x.shape
         x = pretrain_outputs.x.reshape((B, F*D))
         
         x = self.drop_out_pre(self.head_pre(x))
