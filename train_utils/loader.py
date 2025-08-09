@@ -10,6 +10,8 @@ LABEL_DTYPE = torch.int64
 
 MAX_ARR_LENGTH = 70000
 
+EMOTION2IDS = {"happy": 0, "neutral": 1, "sad": 2, "angry": 3}
+
 def _collator(examples: List[Dict[str, Union[int, str, List[float]]]]):
     # batch_max_length = max([len(exp['data_array']) for exp in examples])
     batch_max_length =  MAX_ARR_LENGTH
@@ -74,9 +76,6 @@ def train_test_split(ds: datasets.Dataset, ratio: float)->Tuple[datasets.Dataset
 
         train_ds_result = ds.select(indices= train, keep_in_memory=True)
         test_ds_result = ds.select(indices= test, keep_in_memory=True)
-
-        print('train_ds_result: ', train_ds_result.column_names)
-        print('test_ds_result: ', test_ds_result.column_names)
 
         train_ds_list.append(train_ds_result)
         test_ds_list.append(test_ds_result)
