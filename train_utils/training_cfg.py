@@ -6,7 +6,7 @@ class TrainingConfig:
     batch_size: int = 128
     init_learning_rate: float = 0.001
     min_learning_rate: float = 0.00001
-    lr_scheduler_epochs_skip: int = 2
+    lr_scheduler_epochs_skip: int = 5
     weight_decay = 0.03
     num_workers: int = 2
     prefetch_factor: int = 2
