@@ -10,20 +10,6 @@ LABEL_DTYPE = torch.int64
 
 MAX_ARR_LENGTH = 70000
 
-def _pre_process_dataset(dataset: datasets.Dataset)->datasets.Dataset:
-    r"""
-    Select only main columns
-    """
-    return dataset.map(
-        lambda example: {
-            "data_array": example['path']['array'],
-            'emotion_id': int(example['emotion_id']),
-            'emotion': example['emotion']
-        }, 
-        batched = False,
-        remove_columns = dataset.column_names
-    )
-
 def _collator(examples: List[Dict[str, Union[int, str, List[float]]]]):
     # batch_max_length = max([len(exp['data_array']) for exp in examples])
     batch_max_length =  MAX_ARR_LENGTH
@@ -54,6 +40,20 @@ def _collator(examples: List[Dict[str, Union[int, str, List[float]]]]):
     )
 
 
+def _pre_process_dataset(dataset: datasets.Dataset)->datasets.Dataset:
+    r"""
+    Select only main columns
+    """
+    return dataset.map(
+        lambda example: {
+            "data_array": example['path']['array'],
+            'emotion_id': int(example['emotion_id']),
+            'emotion': example['emotion']
+        }, 
+        batched = False,
+        remove_columns = dataset.column_names
+    )
+
 def train_test_split(ds: datasets.Dataset, ratio: float)->Tuple[datasets.Dataset]:
     emotion_set = set(ds['emotion'])
 
@@ -81,9 +81,15 @@ def train_test_split(ds: datasets.Dataset, ratio: float)->Tuple[datasets.Dataset
         train_ds_list.append(train_ds_result)
         test_ds_list.append(test_ds_result)
 
+    train_concat = datasets.concatenate_datasets(train_ds_list)
+    test_concat = datasets.concatenate_datasets(test_ds_list)
+    
+    train_concat = train_concat.shuffle()
+    test_concat = test_concat.shuffle()
+
     return (
-        _pre_process_dataset(datasets.concatenate_datasets(train_ds_list)),
-        _pre_process_dataset(datasets.concatenate_datasets(test_ds_list))
+        _pre_process_dataset(train_concat),
+        _pre_process_dataset(test_concat)
     )
 
 def get_dataloader(training_config: TrainingConfig):
