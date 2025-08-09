@@ -23,8 +23,13 @@ model = E2VftModel(
 
 for name, module in model.named_modules():
     if '_pretrain_model' in name:
-        for params in module.parameters():
-            params.requires_grad = False
+        if 'blocks' in name:
+            print('name has blocks: ', name)
+            for params in module.parameters():
+                params.requires_grad = True
+        else:
+            for params in module.parameters():
+                params.requires_grad = False
     else:
         for params in module.parameters():
             params.requires_grad = True
@@ -35,12 +40,13 @@ train_dl, test_dl = get_dataloader(training_config= traininig_config)
 
 optimizer = torch.optim.AdamW(
     params=model.parameters(), 
-    lr= traininig_config.learning_rate
+    lr= traininig_config.init_learning_rate
 )
 
 scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-    optimizer, 
-    T_max = traininig_config.num_epochs
+    optimizer,
+    T_max = traininig_config.num_epochs - traininig_config.lr_scheduler_epochs_skip,
+    eta_min= traininig_config.min_learning_rate
 )
 
 for _epoch in range(traininig_config.num_epochs):
@@ -94,4 +100,5 @@ validation:
 """
     print(msg)
 
-    scheduler.step()
+    if _epoch >= traininig_config.lr_scheduler_epochs_skip:
+        scheduler.step()
