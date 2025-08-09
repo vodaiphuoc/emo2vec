@@ -21,6 +21,7 @@ class E2VftModel(torch.nn.Module):
         self._pretrain_model.load_state_dict(pretrain_state_dict)
 
         self.head_pre = torch.nn.Linear(pretrain_cfg.embed_dim, pretrain_cfg.embed_dim)
+        self.drop_out = torch.nn.Dropout(p=0.1)
         self.head_out = torch.nn.Linear(pretrain_cfg.embed_dim, num_classes)
 
     def forward(
@@ -55,6 +56,6 @@ class E2VftModel(torch.nn.Module):
         )
         x = pretrain_outputs.x.mean(dim = 1)
 
-        x = nn.functional.relu(self.head_pre(x))
+        x = nn.functional.relu(self.drop_out(self.head_pre(x)))
         return self.head_out(x)
 
