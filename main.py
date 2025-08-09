@@ -21,18 +21,31 @@ model = E2VftModel(
     pretrain_state_dict = pretrain_state_dict
 ).to(torch.float32).to(device)
 
+import re
 for name, module in model.named_modules():
     if '_pretrain_model' in name:
-        if '_pretrain_model.blocks' in name and int(name.split(".")[-1]) > 5:
-            print('name has blocks: ', name)
-            for params in module.parameters():
-                params.requires_grad = True
-        else:
-            for params in module.parameters():
-                params.requires_grad = False
+        try:
+            match_result = re.match(r"_pretrain_model.blocks\.(\d)", name)
+
+            if match_result is not None and int(match_result.groups()[0]) > 5:
+                for params in module.parameters():
+                    params.requires_grad = True
+
+            else:
+                for params in module.parameters():
+                    params.requires_grad = False
+        except Exception as e:
+            print(name, module)
+            raise
     else:
         for params in module.parameters():
             params.requires_grad = True
+
+# for debug only
+# for name, module in model.named_modules():
+#     # print(name, )
+#     if all([pr.requires_grad for pr in module.parameters()]):
+#         print(name, type(module))
 
 traininig_config = TrainingConfig()
 
