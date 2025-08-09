@@ -27,9 +27,9 @@ for name, module in model.named_modules():
         try:
             match_result = re.match(r"_pretrain_model.blocks\.(\d)", name)
 
-            if match_result is not None and int(match_result.groups()[0]) > 7:
+            if match_result is not None and int(match_result.groups()[0]) > 6:
                 for params in module.parameters():
-                    params.requires_grad = False
+                    params.requires_grad = True
 
             else:
                 for params in module.parameters():

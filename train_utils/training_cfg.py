@@ -4,8 +4,8 @@ import dataclasses
 class TrainingConfig:
     test_size: float = 0.25
     batch_size: int = 128
-    init_learning_rate: float = 0.001
-    min_learning_rate: float = 0.00001
+    init_learning_rate: float = 0.01
+    min_learning_rate: float = 0.0001
     lr_scheduler_epochs_skip: int = 5
     weight_decay = 0.03
     num_workers: int = 2
