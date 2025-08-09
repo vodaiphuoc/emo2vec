@@ -21,7 +21,7 @@ class E2VftModel(torch.nn.Module):
         self._pretrain_model.load_state_dict(pretrain_state_dict)
 
         self.head_pre = torch.nn.Linear(pretrain_cfg.embed_dim*218, pretrain_cfg.embed_dim)
-        self.drop_out_pre = torch.nn.Dropout(p=0.1)
+        self.drop_out_pre = torch.nn.Dropout(p=0.3)
         self.head_inter = torch.nn.Linear(pretrain_cfg.embed_dim, pretrain_cfg.embed_dim)
         self.drop_out_inter = torch.nn.Dropout(p=0.1)
         self.head_out = torch.nn.Linear(pretrain_cfg.embed_dim, num_classes)
@@ -59,7 +59,7 @@ class E2VftModel(torch.nn.Module):
         B, F, D = pretrain_outputs.x.shape
         x = pretrain_outputs.x.reshape((B, F*D))
         
-        x = self.drop_out_pre(self.head_pre(x))
-        x = nn.functional.relu(self.drop_out_inter(self.head_inter(x)))
+        x = nn.functional.leaky_relu(self.drop_out_pre(self.head_pre(x)))
+        x = nn.functional.leaky_relu(self.drop_out_inter(self.head_inter(x)))
         return self.head_out(x)
 
