@@ -23,7 +23,7 @@ class E2VftModel(torch.nn.Module):
         self.head_pre = torch.nn.Linear(pretrain_cfg.embed_dim*281, pretrain_cfg.embed_dim)
         self.drop_out_pre = torch.nn.Dropout(p=0.3)
         self.head_inter = torch.nn.Linear(pretrain_cfg.embed_dim, pretrain_cfg.embed_dim)
-        self.drop_out_inter = torch.nn.Dropout(p=0.1)
+        self.drop_out_inter = torch.nn.Dropout(p=0.15)
         self.head_out = torch.nn.Linear(pretrain_cfg.embed_dim, num_classes)
 
     def forward(
