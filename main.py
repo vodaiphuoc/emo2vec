@@ -75,10 +75,10 @@ for _epoch in range(traininig_config.num_epochs):
         predicts = model(**inputs)
 
         loss = torch.nn.functional.cross_entropy(
-            predicts, 
-            labels, 
+            predicts,
+            labels,
             weight = torch.tensor(
-                [0.3, 0.2, 0.3, 0.2], 
+                [0.3, 0.2, 0.3, 0.2],
                 dtype = predicts.dtype,
                 device = predicts.device
             )

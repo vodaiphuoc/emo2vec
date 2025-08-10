@@ -8,7 +8,7 @@ import random
 ARR_DTYPE = torch.float32
 LABEL_DTYPE = torch.int64
 
-MAX_ARR_LENGTH = 70000
+MAX_ARR_LENGTH = 90000
 
 EMOTION2IDS = {"happy": 0, "neutral": 1, "sad": 2, "angry": 3}
 
