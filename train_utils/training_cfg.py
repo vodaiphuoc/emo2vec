@@ -2,7 +2,7 @@ import dataclasses
 
 @dataclasses.dataclass(frozen=True)
 class TrainingConfig:
-    test_size: float = 0.25
+    test_size: float = 0.2
     batch_size: int = 64
     init_learning_rate: float = 0.001
     min_learning_rate: float = 0.00001
