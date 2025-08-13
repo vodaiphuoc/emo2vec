@@ -56,7 +56,7 @@ class E2VftModel(torch.nn.Module):
             precomputed_mask=precomputed_mask,
             **kwargs
         )
-        print('padding_mask shape: ', pretrain_outputs.padding_mask)
+        print('padding_mask shape: ', pretrain_outputs.padding_mask.shape)
         B, F, D = pretrain_outputs.x.shape
         x = pretrain_outputs.x.reshape((B, F*D))
         
