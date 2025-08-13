@@ -148,6 +148,7 @@ class ModalitySpecificEncoder(nn.Module):
             with torch.no_grad():
                 x = self.local_encoder(features)
 
+        print('local_features, before proj shape: ', x.shape)
         x = self.project_features(x)
         print('local_features, output shape: ', x.shape)
         return x
