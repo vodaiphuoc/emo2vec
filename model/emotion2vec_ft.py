@@ -56,9 +56,11 @@ class E2VftModel(torch.nn.Module):
             precomputed_mask=precomputed_mask,
             **kwargs
         )
-        print('padding_mask shape: ', pretrain_outputs.padding_mask.shape)
+        # print('padding_mask shape: ', pretrain_outputs.padding_mask.shape)
         B, F, D = pretrain_outputs.x.shape
-        x = pretrain_outputs.x.reshape((B, F*D))
+
+        x = pretrain_outputs.x * pretrain_outputs.padding_mask.unsqueeze(-1)
+        x = x.reshape((B, F*D))
         
         x = nn.functional.leaky_relu(self.drop_out_pre(self.head_pre(x)))
         x = nn.functional.leaky_relu(self.drop_out_inter(self.head_inter(x)))
