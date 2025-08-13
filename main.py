@@ -29,7 +29,7 @@ for name, module in model.named_modules():
 
             if match_result is not None and int(match_result.groups()[0]) > 6:
                 for params in module.parameters():
-                    params.requires_grad = False
+                    params.requires_grad = True
 
             else:
                 for params in module.parameters():

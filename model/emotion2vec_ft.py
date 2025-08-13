@@ -22,9 +22,9 @@ class E2VftModel(torch.nn.Module):
 
         self.head_pre = torch.nn.Linear(pretrain_cfg.embed_dim*281, pretrain_cfg.embed_dim)
         self.drop_out_pre = torch.nn.Dropout(p=0.4)
-        # self.head_inter = torch.nn.Linear(pretrain_cfg.embed_dim, pretrain_cfg.embed_dim//2)
-        # self.drop_out_inter = torch.nn.Dropout(p=0.15)
-        self.head_out = torch.nn.Linear(pretrain_cfg.embed_dim, num_classes)
+        self.head_inter = torch.nn.Linear(pretrain_cfg.embed_dim, pretrain_cfg.embed_dim//2)
+        self.drop_out_inter = torch.nn.Dropout(p=0.15)
+        self.head_out = torch.nn.Linear(pretrain_cfg.embed_dim//2, num_classes)
 
     def forward(
             self,
@@ -40,7 +40,6 @@ class E2VftModel(torch.nn.Module):
             precomputed_mask=None,
             **kwargs
         )->torch.Tensor:
-
         source = nn.functional.layer_norm(source, source.shape)
 
         pretrain_outputs: PretrainOutput = self._pretrain_model(
@@ -64,6 +63,6 @@ class E2VftModel(torch.nn.Module):
         
         x = nn.functional.leaky_relu(x)
         x = nn.functional.leaky_relu(self.drop_out_pre(self.head_pre(x)))
-        # x = nn.functional.leaky_relu(self.drop_out_inter(self.head_inter(x)))
+        x = nn.functional.leaky_relu(self.drop_out_inter(self.head_inter(x)))
         return self.head_out(x)
 
